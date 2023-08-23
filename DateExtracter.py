@@ -4,7 +4,7 @@ Created on Mon Jul 10 14:36:56 2023
 
 @author: sragh
 """
-
+# NOTE - THIS CODE IS DEPRECIATED
 import pandas as pd
 import praw
 from praw.models import Comment, Submission
