@@ -5,7 +5,7 @@ Created on Tue Jul 18 14:11:37 2023
 @author: sragh
 """
 
-
+#THIS IS AN ATTEMPT TO IMPLEMENT PARALLEL PROCESSING, currently takes a long time to process small number of submissions cause of large comment tree structure.
 import pandas as pd
 import os
 import praw
@@ -15,10 +15,10 @@ import datetime
 from multiprocessing import Pool
 
 path = r"C:\Users\sragh\OneDrive\Documents\Dissertation\Data\submissions"
-username="theredditapienjoyer"
-password="Thakurji@2002"
-secret="pkvNaeebVm700GggCqouig_cZuvt6Q"
-client_id="4lUm-oVC66Bh1z3veqM9Bw"
+username="" #add Your reddit user name
+password="" #add your reddit password
+secret="" #Add secret key
+client_id="" #Add Client ID
 
 reddit = praw.Reddit(
     client_id=client_id,
