@@ -3,7 +3,11 @@
 Created on Wed Jul 19 15:45:23 2023
 
 @author: sragh
+
+This code aims to generate, train and evaluate an OpenPrompt model to detect norm violation when the external context for the comment is provided. 
 """
+
+#Importing all the necessary libraries and files
 import pandas as pd
 from openprompt.data_utils import InputExample
 import torch
@@ -18,10 +22,13 @@ import pandarallel
 from tqdm.contrib import tenumerate
 path=r"C:\Users\py22715\OneDrive - University of Bristol\Documents\Python Scripts"
 df=pd.read_csv(os.path.join(path,"RS_2021-07_violations.csv"))
-#df=df[df["violation"] != "No Violations" ]
+
 df=df.reset_index()
 
-classes = [ # There are two classes in Sentiment Analysis, one for negative and one for positive
+
+# Defining possible of classes of norm violations
+
+classes = [ 
     "racial_slur",
     "self_harm",
     "Homophobia",
@@ -30,6 +37,7 @@ classes = [ # There are two classes in Sentiment Analysis, one for negative and 
     "No Violations"
 ]
 
+#label encoding all norm violation types and printing the mapping for it
 encoder = LabelEncoder()
 df["label"]=encoder.fit_transform(df["violation"])
 
@@ -37,17 +45,13 @@ le_name_mapping = dict(zip(encoder.classes_, encoder.transform(encoder.classes_)
 
 print(le_name_mapping)
 
+#Loading the pretrained model
 from openprompt.plms import load_plm
 from openprompt.lm_bff_trainer import LMBFFClassificationRunner,ClassificationRunner
 plm, tokenizer, model_config, WrapperClass = load_plm("bert", "bert-base-cased")
 
 
-
-#from transformers import BertConfig
-
-#config = BertConfig()
-#print(dir(config))
-
+#defining prompt template
 from openprompt.prompts import ManualTemplate
 
 promptTemplate = ManualTemplate(
@@ -55,6 +59,7 @@ promptTemplate = ManualTemplate(
     tokenizer = tokenizer,
 )
 
+#Generating a dictionary for all the bad words and using it to generate a verbalizer
 bad_words = {
     "racial_slur": ["nigga","nigger","uncle tom","negro","niggerhead","house slave","monkeyboy"],
     "self_harm": ["kill yourself", "commit suicide"],
@@ -92,22 +97,9 @@ promptVerbalizer = ManualVerbalizer(
     tokenizer = tokenizer,
 )
 
-from transformers import BertModel, AutoConfig
 
-configuration = AutoConfig.from_pretrained('bert-base-cased')
-configuration.hidden_dropout_prob = 0.5
-configuration.attention_probs_dropout_prob = 0.5
         
-bert_model = BertModel.from_pretrained(pretrained_model_name_or_path = 'bert-base-cased', 
-config = configuration)
-
-def reddit_clean(x):
-            return redditcleaner.clean(x)
-def reddit_batch_clean(x):
-            return [redditcleaner.clean(e) for e in x]
-        
-        
-
+#creating a model for norm violations
 from openprompt import PromptForClassification
 promptModel = PromptForClassification(
     template = promptTemplate,
@@ -117,7 +109,7 @@ promptModel = PromptForClassification(
     plm_eval_mode=False
 )
 
-
+#Splitting data and converting it into Input example objects, which will have the context and the query comment
 print("Splitting Data")
 
 data_train_val , data_test = train_test_split(df,train_size=0.8,random_state=2018,stratify=df['label'])
@@ -141,7 +133,7 @@ data_test=InputExampleConverter(data_test.reset_index())
 
         
 
-
+#creating data loaders for cleaned and splitted data 
 from openprompt import PromptDataLoader
 data_loader_train = PromptDataLoader(
     dataset = data_train,
@@ -167,8 +159,7 @@ data_loader_test = PromptDataLoader(
     shuffle=True
 )
 
-#runner = LMBFFClassificationRunner(data_train,data_val,data_test,promptVerbalizer,promptTemplate,model_config)
-#res=runner.run()
+
 
 predictions=[]
 
@@ -186,25 +177,31 @@ optimizer_grouped_parameters = [
     {'params': [p for n, p in promptModel.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
 ]
 
+#uncomment if you want to save data loaders saved.
 #torch.save({"train":data_loader_train,"test":data_loader_test,"val":data_loader_val},os.path.join(path,"DataLoaders8020.pt"))
 #print("Saved Loaders")
+
+#Uncomment if you want to load saved dataloaders
 '''
 data_loaders=torch.load(os.path.join(path,'DataLoaders8020.pt'))
 data_loader_test=data_loaders['test']
 data_loader_train=data_loaders['train']
 data_loader_val=data_loaders['val']
 '''
+#uncomment if you want to load a preiously trained dataloader
 #checkpt = torch.load(os.path.join(path,"violation_type_model_chkpt.pt"))
 #promptModel.load_state_dict(checkpt["model_state_dict"])
 
 #e=checkpt["epoch"]
 
-# Look aty the data loader for this identify line number  135 train and then evaluate the model
+#initializing Data loaders
 optimizer = AdamW(promptModel.parameters(), lr=1e-5)
 #optimizer.load_state_dict(checkpt['optimizer_state_dict'])
 #loss=checkpt['loss']
 #loss.backward()
 
+
+#code for Training the model
 
 for epoch in range(9):
     tot_loss = 0
