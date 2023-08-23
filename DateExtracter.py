@@ -10,10 +10,10 @@ import praw
 from praw.models import Comment, Submission
 import os
 import datetime
-username="theredditapienjoyer"
-password="Thakurji@2002"
-secret="pkvNaeebVm700GggCqouig_cZuvt6Q"
-client_id="4lUm-oVC66Bh1z3veqM9Bw"
+username="" #Enter your reddit username
+password="" #Enter your reddit password
+secret="" #Enter your secret key
+client_id="" #Enter your client ID
 
 reddit = praw.Reddit(
     client_id=client_id,
