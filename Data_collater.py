@@ -3,6 +3,7 @@
 Created on Fri Aug 18 09:58:32 2023
 
 @author: py22715
+This code is used to collate inference data to generate stats for the each violation type
 """
 
 import pandas as pd
@@ -119,12 +120,7 @@ df_stats.to_csv(os.path.join(path,"Violation_stats.csv"),index=False)
 
 
 
-
-
-#golden set
-#each unit describe in inference pipel
-#simple present tense active voice
-#no long sentences                              
+                            
         
         
         
