@@ -4,6 +4,8 @@ Created on Wed Jul 19 15:45:23 2023
 
 @author: sragh
 """
+
+#THIS IS AN EXAMPLE CODE TAKEN FROM OPENPROMPT EXAMPLE , ITS DEPRICIATED
 import pandas as pd 
 from openprompt.data_utils import InputExample
 import torch
