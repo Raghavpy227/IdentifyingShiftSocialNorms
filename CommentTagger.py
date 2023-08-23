@@ -43,17 +43,20 @@ initially we will tag the data from regex and then read the data to rectify any 
 import pandas as pd 
 import re
 import os
+from random import randrange
 
-path=r"C:\Users\sragh\OneDrive\Documents\Dissertation\Data\submissions"
-df= pd.read_csv(os.path.join(path,"RS_2021-07.csv"))
+path=r"C:\Users\sragh\OneDrive\Documents\Dissertation\Data\s3_submissions_downloads"
+df= pd.read_csv(os.path.join(path,"golden_set.csv"))
 #df.drop(["Unnamed: 0"],axis=1,inplace=True)
+df=df[df["context"] != '[]']
+df=df.reset_index()
 
 regex_dict= {
         "racial_slur": [r"(?:nigga|nigger|uncle tom|negro|niggerhead|house slave|monkeyboy)"],
         "self_harm": [r"(?:kill yourself|commit suicide)"],
         "Homophobia":[r"(?:lesbo|faggot|fag)"],
         "Incivility":[r"(?:dickhead|twat|cunt|whore|fuck you|fuck u|retard|bitch|asshole|dimwit|bullshit|cocksucker|motherfuck)"],
-        "harrassment":[r"(?:penis|pussy|tits|dick|sexy bitch|suck dick)"]
+        "harrassment":[r"(?:penis|pussy|tits|dick|sexy bitch|suck dick|moron)"]
     }
 #"personal_id":[r"(?:[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})"]
 #"Spam": [r"(?:\(\S+\) \S+: .*(\S)(?: *\1){9,}.*)"
@@ -81,7 +84,7 @@ for i in new_context:
         
      if diff_sp in j:
         #print("Hi")
-        inter.append(re.split(diff_sp,j))
+        inter.extend(re.split(diff_sp,j))
     else:
         inter.append(j)
     better_split.append(inter)    
@@ -92,39 +95,47 @@ df["context"]  = better_split
 
 for i in better_split:
     counter_context=0
-    for j in i :
-        for m in j: 
-            mini_context=0
-            check=0 
-            for k in regex_dict.keys(): 
-                pattern = re.compile('|'.join(regex_dict[k]), re.IGNORECASE)
-                matches = pattern.findall(m)
-                if len(matches)>0: 
-                    violation.append(k)
-                    violation_sentence.append(m)
-                    subreddit.append(df["subreddit"][counter_row])
-                    new_created.append(df["created_date"][counter_row])
-                    new_id.append(df["id"][counter_row])
-                    t=[]
-                    t.append(i[0:counter_context])
-                    t.append(j[0:mini_context])
-                    subcontexts.append(t)
-                    check=1
-                    is_violation.append("Yes")
-                elif len(matches)==0:
-                    continue
-                mini_context+=1
+    for j in i : 
+        if j.lower() =="deleted" or j.lower() =='removed'  :
+            del j
+            continue
+        check=0
+        for k in regex_dict.keys(): 
+            pattern = re.compile('|'.join(regex_dict[k]), re.IGNORECASE)
+            matches = pattern.findall(j)
+            if len(matches)>0: 
+                violation.append(k)
+                violation_sentence.append(j)
+                subreddit.append(df["subreddit"][counter_row])
+                new_created.append(df["created_date"][counter_row])
+                new_id.append(df["id"][counter_row])
+                subcontexts.append(i[0:counter_context])
+                check=1
+                is_violation.append("Yes")
+            elif len(matches)==0:
+                continue
+                
         counter_context+=1     
         
             
     if check == 0: 
-        violation.append("No Violations")
-        violation_sentence.append(" ")
-        subreddit.append(df["subreddit"][counter_row])
-        new_created.append(df["created_date"][counter_row])
-        new_id.append(df["id"][counter_row])
-        subcontexts.append(j)
-        is_violation.append("No")
+        
+        itr=0
+        while itr<2:
+            try: 
+                
+                rand_index=randrange(1,len(i),1) 
+                violation.append("No Violations")
+                violation_sentence.append(i[rand_index])
+                subcontexts.append(i[0:rand_index])
+                subreddit.append(df["subreddit"][counter_row])
+                new_created.append(df["created_date"][counter_row])
+                new_id.append(df["id"][counter_row])
+                is_violation.append("No")
+                itr+=1
+            except:
+                 itr=itr+1
+                
                      
                     
             
@@ -138,11 +149,15 @@ df["created_date"]=new_created
 df["context"]=subcontexts
 df["is_violation"]=is_violation
 df["violation"]=violation
-df["violation sentence"]=violation_sentence   
+df["sentence"]=violation_sentence
+df['sentence']=df['sentence'].astype('str')
 
-
-df.to_csv(os.path.join(path,"RS_2012-03_violations.csv"),index=False)          
-    
+mask=df['sentence'].str.len() >15
+df=df.loc[mask]
+mask=df['context'].str.len() >5
+df=df.loc[mask]
+df.to_csv(os.path.join(path,"golden_set2.csv"),index=False)          
+  
 
             
             
