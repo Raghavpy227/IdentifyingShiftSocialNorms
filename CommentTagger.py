@@ -39,18 +39,21 @@ If there are more than one violations try we will replicate the row upto the nex
                                                                                                                                                     ) 
 initially we will tag the data from regex and then read the data to rectify any possible changes
 """
+#Importing all the necessary libraries
 
 import pandas as pd 
 import re
 import os
 from random import randrange
-
+#filename which needs to be read and path to read the file
+filename=''
 path=r"C:\Users\sragh\OneDrive\Documents\Dissertation\Data\s3_submissions_downloads"
-df= pd.read_csv(os.path.join(path,"golden_set.csv"))
+df= pd.read_csv(os.path.join(path,filename))
 #df.drop(["Unnamed: 0"],axis=1,inplace=True)
 df=df[df["context"] != '[]']
 df=df.reset_index()
 
+#Initializing Reddit Dict to tag depending upon phrases
 regex_dict= {
         "racial_slur": [r"(?:nigga|nigger|uncle tom|negro|niggerhead|house slave|monkeyboy)"],
         "self_harm": [r"(?:kill yourself|commit suicide)"],
@@ -60,6 +63,8 @@ regex_dict= {
     }
 #"personal_id":[r"(?:[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})"]
 #"Spam": [r"(?:\(\S+\) \S+: .*(\S)(?: *\1){9,}.*)"
+
+
 is_violation=[]
 violation=[]
 violation_sentence=[]
@@ -71,6 +76,7 @@ new_created=[]
 counter_row=0
 df.drop(["context"],axis=1,inplace=True)
 
+# Splitting Context to generate a cleaner form of context
 new_context=[]
 for i in full_context:
     new_context.append(i.split("',"))
@@ -93,6 +99,7 @@ for i in new_context:
 count=0    
 df["context"]  = better_split
 
+# This for loop iterates through the context column and tags comments as per occurance using regex
 for i in better_split:
     counter_context=0
     for j in i : 
@@ -118,7 +125,7 @@ for i in better_split:
         counter_context+=1     
         
             
-    if check == 0: 
+    if check == 0:    #This block of code is used to generate two random Comments-context pairs from the comment tree if none of the comments violate any norm
         
         itr=0
         while itr<2:
@@ -152,11 +159,12 @@ df["violation"]=violation
 df["sentence"]=violation_sentence
 df['sentence']=df['sentence'].astype('str')
 
+#filtering to remove small contexts and sentences , Then outputting the files
 mask=df['sentence'].str.len() >15
 df=df.loc[mask]
 mask=df['context'].str.len() >5
 df=df.loc[mask]
-df.to_csv(os.path.join(path,"golden_set2.csv"),index=False)          
+df.to_csv(os.path.join(path,filename),index=False)          
   
 
             
