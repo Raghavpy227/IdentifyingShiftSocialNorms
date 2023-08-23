@@ -4,6 +4,7 @@ Created on Sat Jul 15 14:34:39 2023
 
 @author: sragh
 """
+#importing all the necessary libraries
 
 import pandas as pd
 import os
@@ -13,14 +14,13 @@ from praw.models.comment_forest import CommentForest
 import datetime
 from multiprocessing import Pool
 
-
 path = r"C:\Users\sragh\OneDrive\Documents\Dissertation\Data\submissions"
 all_csv=os.listdir(path)
 dataframes=dict()
-username="theredditapienjoyer"
-password="Thakurji@2002"
-secret="pkvNaeebVm700GggCqouig_cZuvt6Q"
-client_id="4lUm-oVC66Bh1z3veqM9Bw"
+username="" #Enter Your Reddit Username
+password="" #Enter your Reddit password
+secret="" Enter your Reddit secret key from reddit
+client_id="" #Enter Client ID from Reddit
 
 for i in all_csv:
     if i[-1]=='v':
