@@ -3,6 +3,7 @@
 Created on Fri Jul 14 23:44:00 2023
 
 @author: sragh
+THIS CODE IS DEPRECIATED
 """
 
 import pandas as pd
@@ -13,10 +14,11 @@ from praw.models.comment_forest import CommentForest
 import datetime
 
 path = r"C:\Users\sragh\OneDrive\Documents\Dissertation\Data\comments"
-username="theredditapienjoyer"
-password="Thakurji@2002"
-secret="pkvNaeebVm700GggCqouig_cZuvt6Q"
-client_id="4lUm-oVC66Bh1z3veqM9Bw"
+#Enter your Reddit credentials
+username=""
+password=""
+secret=""
+client_id=""
 
 df=pd.read_csv(os.path.join(os.path.join(path,"RC_2005-12.csv")))
 reddit = praw.Reddit(
