@@ -3,8 +3,9 @@
 Created on Wed Aug 16 15:24:25 2023
 
 @author: py22715
+This trains the Base trained OpenPromptModel and then retrain them on small fraction of data from different pre-defined eras
 """
-
+#Importing all necessary libraries
 import pandas as pd
 from openprompt.data_utils import InputExample
 import torch
@@ -19,14 +20,18 @@ from openprompt import PromptDataLoader
 import boto3
 from tqdm.contrib import tenumerate
 
+#Importing PreTagged data for both Eras
 path=r"C:\Users\py22715\OneDrive - University of Bristol\Documents\Python Scripts"
 
 df_2005=pd.read_csv(os.path.join(path,"RS_2005_10_training_data_tagged.csv"))
 df_2011=pd.read_csv(os.path.join(path,"RS_2011_15_training_data_tagged.csv"))
+
+#Loading two instances of pretrained model, one for each era
 model_chkpt=torch.load(os.path.join(path,"violation_type_context_model_chkpt.pt"))
 promptModel_2005=model_chkpt['model']
 promptModel_2011=model_chkpt['model']
 
+#label Encoding and splitting the data for training purposes
 encoder = LabelEncoder()
 df_2005["label"]=encoder.fit_transform(df_2005["violation"])
 df_2011["label"]=encoder.fit_transform(df_2011["violation"])
@@ -42,6 +47,7 @@ training_2011,val_2011=train_test_split(training_val_2011, train_size=0.8,
                                         stratify=training_val_2011['label'])
 
 
+#Creating a prompt template and loading tokenizer
 from openprompt.prompts import ManualTemplate
 
 from openprompt.plms import load_plm
@@ -54,7 +60,7 @@ promptTemplate = ManualTemplate(
     tokenizer = tokenizer,
 )
 
-
+#converting the data into InputExamples
 def InputExampleConverter(df): 
     dataset=[]
     count=0
@@ -77,6 +83,7 @@ training_2011=InputExampleConverter(training_2011.reset_index())
 val_2011=InputExampleConverter(val_2011.reset_index())
 test_2011=InputExampleConverter(test_2011.reset_index())   
 
+#converting data into Dataloaders
 from openprompt import PromptDataLoader
 data_loader_train_2005 = PromptDataLoader(
     dataset = training_2005,
@@ -136,7 +143,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 from transformers import  AdamW, get_linear_schedule_with_warmup
 loss_func = torch.nn.CrossEntropyLoss()
 
-
+#the function which trains the model and then the saved model is saved as a pytorch checkpoint
 def trainer(promptModel,data_loader_train,data_loader_val,data_loader_test,name):
  optimizer = AdamW(promptModel.parameters(), lr=1e-5)   
  for epoch in range(2):
