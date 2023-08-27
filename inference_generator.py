@@ -3,6 +3,7 @@
 Created on Sun Aug  6 20:56:14 2023
 
 @author: py22715
+THIS CODE IS DEPRECIATED - Please check the AWS Enabled version of it
 """
 
 import pandas as pd
