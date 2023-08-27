@@ -84,6 +84,7 @@ self_harm=[]
 racial_slur=[]
 df_stats=pd.DataFrame()
 
+#counts the number of instances of each norm violation type. The Numbers are from label encoder and mapped accordingly
 def stats_extracter(df): 
     predictions=list(df["predictions"])
     print(type(predictions))
