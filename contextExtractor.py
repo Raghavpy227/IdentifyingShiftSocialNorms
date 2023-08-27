@@ -3,6 +3,8 @@
 Created on Thu Jul  6 15:20:59 2023
 
 @author: sragh
+
+THIS CODE IS DEPRICIATED AND NOT PART OF THE FLOW
 """
 
 import pandas as pd 
