@@ -1,6 +1,6 @@
 '''
 The Aim of this code is to generate the pytorch checkpoints of 20000 entries from Inference data for both the eras(2005-2010, 2011-2015).Each of them would have corresponding date
-for InputExample objects. This code is specifically for 2005-2010 data frame . Change the dataframe 2011-2015. look at datapipe_2.py to do so
+for InputExample objects. This code is specifically for 2005-2010 data frame . Change the dataframe 2011-2015. look at data_pipeline2.py to do so
 '''
 
 import pandas as pd
