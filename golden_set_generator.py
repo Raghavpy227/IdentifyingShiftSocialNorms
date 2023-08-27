@@ -3,6 +3,7 @@
 Created on Sun Aug 20 14:06:52 2023
 
 @author: sragh
+The Aim of this code is to randomly pick 5 files and select the first 10-20 submissions  and generate a golden set which would be manually tagged
 """
 
 import os
