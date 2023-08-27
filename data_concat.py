@@ -3,6 +3,7 @@
 Created on Wed Aug  9 22:03:47 2023
 
 @author: sragh
+This piece of code is responsible for dividing the data into eras 2005-2010 and 2011-2015 . Initially 2016-2019 was considered but Removed later
 """
 
 import os
