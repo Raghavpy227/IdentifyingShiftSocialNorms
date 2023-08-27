@@ -1,3 +1,7 @@
+'''
+Same logic as Inference_datapipe.py but for 2011-2015 era
+'''
+
 import pandas as pd
 from openprompt.data_utils import InputExample
 import torch
