@@ -1,3 +1,5 @@
+# This code was provided by the manager of pushshift dump archive and is available at https://github.com/Watchful1/PushshiftDumps/tree/master/scripts as "to_csv.py"
+
 import zstandard
 import os
 import json
