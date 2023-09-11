@@ -170,12 +170,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 # Now the training is standard
 from transformers import  AdamW, get_linear_schedule_with_warmup
 loss_func = torch.nn.CrossEntropyLoss()
-no_decay = ['bias', 'LayerNorm.weight']
-# it's always good practice to set no decay to biase and LayerNorm parameters
-optimizer_grouped_parameters = [
-    {'params': [p for n, p in promptModel.named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
-    {'params': [p for n, p in promptModel.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
-]
+
 
 #uncomment if you want to save data loaders saved.
 #torch.save({"train":data_loader_train,"test":data_loader_test,"val":data_loader_val},os.path.join(path,"DataLoaders8020.pt"))
